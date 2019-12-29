@@ -7,10 +7,15 @@
  class Game{
    constructor(){
      this.missed = 0;
-     this.phrases = [{phrase: "Winner"},{phrase: "Easy"},{phrase: "Hard"}, {phrase: "Very Hard"}, {phrase: "Lucky"}];
+     this.phrases = [{phrase: "Have Fun"},
+     {phrase: "How are you"},
+     {phrase: "Nice Job"},
+     {phrase: "The Force is Strong With This One"},
+     {phrase: "I am Your Father"}];
+
      this.activePhrase = 'null';
    }
-
+   // gets a random phrase from the array above
    getRandomPhrase() {
     let randomNum = Math.floor(Math.random() * 5);
     return this.phrases[randomNum];
