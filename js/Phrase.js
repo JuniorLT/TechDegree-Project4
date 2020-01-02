@@ -51,10 +51,12 @@
   }
 
   // checks if passed letter is in phrase
-  // parameters are the clicked letter and the active phrase
-  checkLetter(letter, phrase) {
-    // variable that holds the game class
-    var game = new Game();
+  // parameters are the active phrase
+  checkLetter(key, phrase) {
+    // variable that holds the clicked key
+    var activeKey = key.innerHTML;
+    // variable that holds the active phrase
+    var activePhrase = phrase;
 
     // regex used to check if something is a word
     var isLetter = (/[\w]/);
@@ -67,9 +69,9 @@
     var letters = 0;
 
     // loop that goes through active phrase
-    for(let i = 0; i < phrase.length; i++){
+    for(let i = 0; i < activePhrase.length; i++){
       // variable that holds the each character in the phrase
-      var phraseLetter = phrase[i].toLowerCase();
+      var phraseLetter = activePhrase[i].toLowerCase();
 
       // conditional that checks if character is actually a letter
       if(isLetter.test(phraseLetter) == true){
@@ -77,48 +79,53 @@
         letters += 1;
 
         // conditional that checks if actual letter matches with letter clicked
-        if(phraseLetter == letter.innerHTML){
-          // if it does show matching letter on the gameboard
-          this.showMatchedLetter(phraseLetter);
+        if(phraseLetter == activeKey){
+          // if it does return the boolean value true
+          key.classList.remove('wrong');
+          return true
         }else{
           // if it does not match the letter in the phrase misses increases
           missed += 1;
         }
-
       }
     }
 
     // conditional that checks if the amount of misses is equal to the amount of letters in the phrase
     // basically if the clicked letter didn't match with any of the letters
     if(letters == missed){
-      // clicked letter is identified with class wrong
-      letter.classList.add('wrong');
-
-      // player loses a life
-      game.removeLife(letter);
-
+      // return the boolean value false
+      return false
     }
   }
 
   // displays letter on screen after match is found
-  showMatchedLetter(letter) {
-    // variable that holds the game class
-    var game = new Game();
-
+  showMatchedLetter(keys) {
+    // regex used to check if something is a word
+    var isLetter = (/[\w]/);
     // variable that holds the hidden elements
-    var hiddenLetter = document.getElementsByClassName("hide");
+    var hiddenChars = document.getElementsByClassName("hide");
+
+    // variable that holds the shown elements
+    var shownChars = document.getElementsByClassName('show');
 
     // loop that will go through each hidden element
-    for (let i = 0; i< hiddenLetter.length; i++){
-      // conditional that checks if the hidden element is the same as the letter clicked
-      if(hiddenLetter[i].innerHTML == letter){
-        // displays the hidden letter on the gameboard
-        hiddenLetter[i].classList.add('show');
-        hiddenLetter[i].classList.remove('hide');
-
-        // calls the check for win method from the game class
-        game.checkForWin();
+    for (let i = 0; i< hiddenChars.length; i++){
+      // variable that holds the hidden letters
+      var hiddenLetter = hiddenChars[i].innerHTML;
+      // conditional that makes sure that the letter is an actual letter
+      if(isLetter.test(hiddenLetter) == true){
+        // conditional that checks if the hidden element is the same as the letter clicked
+        if(hiddenLetter.toLowerCase() == keys){
+          // displays the hidden letter on the gameboard
+          hiddenChars[i].classList.add('show');
+        }
       }
     }
+
+    // for every shown character remove the class 'hide'
+    for(let i = 0; i < shownChars.length; i++){
+      shownChars[i].classList.remove('hide');
+    }
+
   }
 }

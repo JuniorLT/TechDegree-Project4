@@ -33,15 +33,11 @@
      // variable that selects the overlay
      var startScreen = document.getElementById('overlay');
 
-     // variable that selects all the keys on the game board
-     var keys = document.getElementsByClassName('key');
-
      // variable that will hold the random phrase
      var randomPhrase = this.getRandomPhrase();
 
      // variable that will hold the random phrase after it has been sent to the phrase class
      var phrase = new Phrase(randomPhrase.phrase);
-
 
      // hide the overlay
      startScreen.style.display = 'none';
@@ -52,28 +48,54 @@
      // random phrase is set to the current one being used
      this.activePhrase = phrase.phrase;
 
-     // event listener that will listen for any of the keys to be clicked
-     for (let i = 0; i < keys.length; i++){
+     // loop that restores every key on the gameboard to default
+     for(let i = 0; i < keys.length; i ++){
        var key = keys[i];
-       key.addEventListener('click', event =>{
-         // send the keys being clicked to the handle interaction method in the game class
-         this.handleInteraction(event.target, this.activePhrase);
-       })
+       key.classList.remove('chosen');
+       key.classList.remove('wrong');
+       key.disabled = false;
      }
+
+     // return current phrase to the constructor
+     return this.activePhrase
    }
 
    //captures the clicked letter
-   // parameters are the clicked key letter and the active phrase
-   handleInteraction(keys, activePhrase){
+   // parameters are the clicked key letter
+   handleInteraction(keys){
      // variable that holds the phrase class
      var phrase = new Phrase();
 
      // gives the keys clicked the class chosen so that user knows it has been clicked
     keys.classList.add('chosen');
 
-    // calls the checkletter method from the phrase class on the letters being clicked
-    // and the current phrase to checked with
-    phrase.checkLetter(keys, activePhrase);
+    keys.classList.add('wrong');
+
+    // disables clicked key so that it can't be clicked anymore
+    keys.disabled = true;
+
+    // calls the checkletter method from the phrase class
+    var check = phrase.checkLetter(keys, this.activePhrase);
+
+    // conditional that checks if checkLetter method is returned with a true or not
+    if(check == true){
+      // if true then show matched letter and check for win
+      phrase.showMatchedLetter(keys.innerHTML);
+      // variable that holds the value returned from check for win
+      var win = this.checkForWin();
+
+      // conditional that checks if the check for win method returned with either true/false
+        if (win == true){
+          // if true call gameOver method using true
+          this.gameOver(true);
+        }else{
+          // if true call gameOver method using false
+          this.gameOver(false);
+        }
+    }else if (check == false){
+      // if false remove a life
+      this.removeLife();
+    }
   }
 
   // checks for winning move
@@ -99,10 +121,11 @@
      // conditional that checks if hidden letters are still hidden
      // if none are hidden that means player has found them all
      if(letters == 0){
-       // calls the gameOver method from the game class
-       this.gameOver(true);
+       // returns true
+       return true;
      }else{
-       this.gameOver(false);
+       // returns false
+       return false;
      }
    }
 
@@ -122,6 +145,13 @@
      // keys with the class wrong did not match with the phrase
      var keysWrong = document.getElementsByClassName('wrong');
 
+     // variable that holds every key
+     var keys = document.getElementsByClassName('key');
+
+     // var phraseList = document.getElementsByClassName('letter');
+     var phraseList = document.getElementById('list');
+
+
      // variables that hold the players lives
      var heart1 = document.getElementById('1');
      var heart2 = document.getElementById('2');
@@ -139,60 +169,95 @@
 
        // displays game over display with losing messages
        // hides winning message
-       show.style.display = "block";
-       lose.style.display = "block";
-       win.style.display = "none";
 
-       // changes the text on the button to say restart
-       button.innerHTML = "Restart?";
+         // display winning message and hide losing message
+         show.style.display = 'block';
+         win.style.display = 'none';
+         lose.style.display = 'block';
 
-       // event listener that will wait for button to be clicked
-       button.addEventListener('click', event => {
-         // reloads the page
-         location.reload();;
-       });
+         // loops over list that contains the phrase and removes all the list items
+         while (phraseList.hasChildNodes()){
+           phraseList.removeChild(phraseList.firstChild);
+         }
+
+         // restores hearts to default
+         heart4.src = "images/liveHeart.png";
+         heart3.src = "images/liveHeart.png";
+         heart2.src = "images/liveHeart.png";
+         heart1.src = "images/liveHeart.png";
+
+         // loop that restores every key on the gameboard to default
+         for(let i = 0; i < keys.length; i ++){
+           var key = keys[i];
+           key.classList.remove('chosen');
+           key.classList.remove('wrong');
+           key.disabled = false;
+         }
 
      } else if (this.missed == 4){
        // if misses equal 4 lose a heart by changing source of img
-       heart4.src = "file:///E:/Treehouse/FullStack%20JavaScript%20TechDegree/TechDegree-Project4/images/lostHeart.png";
+       heart4.src = "images/lostHeart.png";
      } else if (this.missed == 3){
        // if misses equal 3 lose a heart by changing source of img
-       heart3.src = "file:///E:/Treehouse/FullStack%20JavaScript%20TechDegree/TechDegree-Project4/images/lostHeart.png";
+       heart3.src = "images/lostHeart.png";
      } else if (this.missed == 2){
        // if misses equal 2 lose a heart by changing source of img
-       heart2.src = "file:///E:/Treehouse/FullStack%20JavaScript%20TechDegree/TechDegree-Project4/images/lostHeart.png";
+       heart2.src = "images/lostHeart.png";
      } else if (this.missed == 1){
        // if misses equal 1 lose a heart by changing the source of img
-       heart1.src = "file:///E:/Treehouse/FullStack%20JavaScript%20TechDegree/TechDegree-Project4/images/lostHeart.png";
+       heart1.src = "images/lostHeart.png";
      }
    }
 
    // method that will display winning message if the parameter (boolean value)
    // is returned with either true or false
    gameOver(gameWon) {
-     // variables that hold the overlay and winning message
-    var show = document.getElementById('overlay');
-    var lose = document.getElementById('game-over-message');
-    var win = document.getElementById('win');
+     // variables that select the overlay nad the win/game over message
+     var show = document.getElementById('overlay');
+     var lose = document.getElementById('game-over-message');
+     var win = document.getElementById('win');
 
-    // variable that selects the button that will reset the game
-    var button = document.getElementById('btn__reset');
+     // variable that selects the button to reset the game
+     var button = document.getElementById('btn__reset');
+
+     var keys = document.getElementsByClassName('key');
+
+     // var phraseList = document.getElementsByClassName('letter');
+     var phraseList = document.getElementById('list');
+
+     // variables that hold the players lives
+     var heart1 = document.getElementById('1');
+     var heart2 = document.getElementById('2');
+     var heart3 = document.getElementById('3');
+     var heart4 = document.getElementById('4');
+     var heart5 = document.getElementById('5');
 
     //conditional that checks if the method is returned with true
     if(gameWon == true){
+
       // display winning message and hide losing message
       show.style.display = 'block';
       win.style.display = 'block';
       lose.style.display = 'none';
 
-      //changes the text on the button to reset
-      button.innerHTML = "Restart?";
+      // loops over list that contains the phrase and removes all the list items
+      while (phraseList.hasChildNodes()){
+        phraseList.removeChild(phraseList.firstChild);
+      }
 
-      // event listener that listens for the button to be clicked
-      button.addEventListener('click', event => {
-        // reloads the page
-        location.reload();
-      });
+      // restores hearts to default
+      heart4.src = "images/liveHeart.png";
+      heart3.src = "images/liveHeart.png";
+      heart2.src = "images/liveHeart.png";
+      heart1.src = "images/liveHeart.png";
+
+      // loop that restores every key on the gameboard to default
+      for(let i = 0; i < keys.length; i ++){
+        var key = keys[i];
+        key.disabled = false;
+        key.classList.remove('chosen');
+        key.classList.remove('wrong');
+      }
     }
    }
  }
