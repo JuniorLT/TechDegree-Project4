@@ -61,38 +61,22 @@
     // regex used to check if something is a word
     var isLetter = (/[\w]/);
 
-    // variable used to store how many letters in the phrase
-    // didn't match with letter clicked
-    var missed = 0;
-
-    // variable that stores the amount of actual letters
-    var letters = 0;
+    // boolean value that will change if the letter is in the phrase
+    var letterInPhrase = false
 
     // loop that goes through active phrase
     for(let i = 0; i < activePhrase.length; i++){
       // variable that holds the each character in the phrase
       var phraseLetter = activePhrase[i].toLowerCase();
 
-      // conditional that checks if character is actually a letter
-      if(isLetter.test(phraseLetter) == true){
-        // amount of letter increase
-        letters += 1;
-
-        // conditional that checks if actual letter matches with letter clicked
-        if(phraseLetter == activeKey){
-          // if it does return the boolean value true
-          key.classList.remove('wrong');
-          return true
-        }else{
-          // if it does not match the letter in the phrase misses increases
-          missed += 1;
-        }
+      // conditional that returns true if letter is in the phrase
+      if(phraseLetter == activeKey){
+        letterInPhrase = true
+        return true
       }
     }
 
-    // conditional that checks if the amount of misses is equal to the amount of letters in the phrase
-    // basically if the clicked letter didn't match with any of the letters
-    if(letters == missed){
+    if(letterInPhrase == false){
       // return the boolean value false
       return false
     }
@@ -105,27 +89,21 @@
     // variable that holds the hidden elements
     var hiddenChars = document.getElementsByClassName("hide");
 
-    // variable that holds the shown elements
-    var shownChars = document.getElementsByClassName('show');
-
     // loop that will go through each hidden element
     for (let i = 0; i< hiddenChars.length; i++){
       // variable that holds the hidden letters
       var hiddenLetter = hiddenChars[i].innerHTML;
       // conditional that makes sure that the letter is an actual letter
       if(isLetter.test(hiddenLetter) == true){
+        var hiddenElement = hiddenChars[i];
+
         // conditional that checks if the hidden element is the same as the letter clicked
         if(hiddenLetter.toLowerCase() == keys){
-          // displays the hidden letter on the gameboard
-          hiddenChars[i].classList.add('show');
+          // add the class show and remove the class hide
+          hiddenElement.classList.add('show');
+          hiddenElement.classList.remove('hide');
         }
       }
     }
-
-    // for every shown character remove the class 'hide'
-    for(let i = 0; i < shownChars.length; i++){
-      shownChars[i].classList.remove('hide');
-    }
-
   }
 }

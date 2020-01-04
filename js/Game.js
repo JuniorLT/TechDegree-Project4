@@ -11,10 +11,10 @@
 
      // array that holds the phrases
      this.phrases = [{phrase: "Have Fun"},
-     {phrase: "Phrase"},
-     {phrase: "Terrific"},
-     {phrase: "Well Done"},
-     {phrase: "Hunter"}];
+     {phrase: "You win"},
+     {phrase: "Tricky"},
+     {phrase: "Water"},
+     {phrase: "Joy"}];
 
      // holds the current phrase being used
      this.activePhrase = 'null';
@@ -30,6 +30,7 @@
 
    // Begins Game by selecting a random phrase and displaying
    startGame() {
+
      // variable that selects the overlay
      var startScreen = document.getElementById('overlay');
 
@@ -38,6 +39,20 @@
 
      // variable that will hold the random phrase after it has been sent to the phrase class
      var phrase = new Phrase(randomPhrase.phrase);
+
+     // variables that hold the players lives
+     var heart1 = document.getElementById('1');
+     var heart2 = document.getElementById('2');
+     var heart3 = document.getElementById('3');
+     var heart4 = document.getElementById('4');
+     var heart5 = document.getElementById('5');
+
+     // restores hearts to default
+     heart5.src = "images/liveHeart.png";
+     heart4.src = "images/liveHeart.png";
+     heart3.src = "images/liveHeart.png";
+     heart2.src = "images/liveHeart.png";
+     heart1.src = "images/liveHeart.png";
 
      // hide the overlay
      startScreen.style.display = 'none';
@@ -56,6 +71,9 @@
        key.disabled = false;
      }
 
+     // resets amount of misses to 0
+     this.missed = 0;
+
      // return current phrase to the constructor
      return this.activePhrase
    }
@@ -63,13 +81,8 @@
    //captures the clicked letter
    // parameters are the clicked key letter
    handleInteraction(keys){
-     // variable that holds the phrase class
+     // variable that holds the phrase class to be called later
      var phrase = new Phrase();
-
-     // gives the keys clicked the class chosen so that user knows it has been clicked
-    keys.classList.add('chosen');
-
-    keys.classList.add('wrong');
 
     // disables clicked key so that it can't be clicked anymore
     keys.disabled = true;
@@ -79,6 +92,8 @@
 
     // conditional that checks if checkLetter method is returned with a true or not
     if(check == true){
+      // gives the keys clicked the class chosen so that user knows it has been clicked
+     keys.classList.add('chosen');
       // if true then show matched letter and check for win
       phrase.showMatchedLetter(keys.innerHTML);
       // variable that holds the value returned from check for win
@@ -88,11 +103,10 @@
         if (win == true){
           // if true call gameOver method using true
           this.gameOver(true);
-        }else{
-          // if true call gameOver method using false
-          this.gameOver(false);
         }
     }else if (check == false){
+
+      keys.classList.add('wrong');
       // if false remove a life
       this.removeLife();
     }
@@ -133,79 +147,21 @@
    // increases the missed property
    // checks if out of lives and ends the game when lives run out
    removeLife() {
-     // variables that select the overlay nad the win/game over message
-     var show = document.getElementById('overlay');
-     var lose = document.getElementById('game-over-message');
-     var win = document.getElementById('win');
+     // variable for how many wrong elements have been clicked
+     var wrongElem = document.getElementsByClassName('wrong');
 
-     // variable that selects the button to reset the game
-     var button = document.getElementById('btn__reset');
+     // amount of misses increments according to how many wrong elements have been clicked
+     this.missed = wrongElem.length;
 
-     // variable that stores all the keys with the class wrong
-     // keys with the class wrong did not match with the phrase
-     var keysWrong = document.getElementsByClassName('wrong');
+     // selects the heart image using id of missed
+     var heart = document.getElementById(this.missed+'');
 
-     // variable that holds every key
-     var keys = document.getElementsByClassName('key');
+     // changes the image of live heart to lost heart
+     heart.src = "images/lostHeart.png";
 
-     // var phraseList = document.getElementsByClassName('letter');
-     var phraseList = document.getElementById('list');
-
-
-     // variables that hold the players lives
-     var heart1 = document.getElementById('1');
-     var heart2 = document.getElementById('2');
-     var heart3 = document.getElementById('3');
-     var heart4 = document.getElementById('4');
-     var heart5 = document.getElementById('5');
-
-     // amount of misses is equal to amount of keys with the class wrong
-     this.missed = keysWrong.length;
-
-     // conditional that checks the amount of misses
+     // conditional that checks if user has lost
      if(this.missed == 5){
-       // if all misses eaual 5 then player loses
-       // because there are only 5 hearts
-
-       // displays game over display with losing messages
-       // hides winning message
-
-         // display winning message and hide losing message
-         show.style.display = 'block';
-         win.style.display = 'none';
-         lose.style.display = 'block';
-
-         // loops over list that contains the phrase and removes all the list items
-         while (phraseList.hasChildNodes()){
-           phraseList.removeChild(phraseList.firstChild);
-         }
-
-         // restores hearts to default
-         heart4.src = "images/liveHeart.png";
-         heart3.src = "images/liveHeart.png";
-         heart2.src = "images/liveHeart.png";
-         heart1.src = "images/liveHeart.png";
-
-         // loop that restores every key on the gameboard to default
-         for(let i = 0; i < keys.length; i ++){
-           var key = keys[i];
-           key.classList.remove('chosen');
-           key.classList.remove('wrong');
-           key.disabled = false;
-         }
-
-     } else if (this.missed == 4){
-       // if misses equal 4 lose a heart by changing source of img
-       heart4.src = "images/lostHeart.png";
-     } else if (this.missed == 3){
-       // if misses equal 3 lose a heart by changing source of img
-       heart3.src = "images/lostHeart.png";
-     } else if (this.missed == 2){
-       // if misses equal 2 lose a heart by changing source of img
-       heart2.src = "images/lostHeart.png";
-     } else if (this.missed == 1){
-       // if misses equal 1 lose a heart by changing the source of img
-       heart1.src = "images/lostHeart.png";
+       this.gameOver(false)
      }
    }
 
@@ -232,9 +188,17 @@
      var heart4 = document.getElementById('4');
      var heart5 = document.getElementById('5');
 
+           // restores hearts to default
+           heart5.src = "images/liveHeart.png";
+           heart4.src = "images/liveHeart.png";
+           heart3.src = "images/liveHeart.png";
+           heart2.src = "images/liveHeart.png";
+           heart1.src = "images/liveHeart.png";
+
     //conditional that checks if the method is returned with true
     if(gameWon == true){
 
+      this.missed = 0;
       // display winning message and hide losing message
       show.style.display = 'block';
       win.style.display = 'block';
@@ -245,11 +209,6 @@
         phraseList.removeChild(phraseList.firstChild);
       }
 
-      // restores hearts to default
-      heart4.src = "images/liveHeart.png";
-      heart3.src = "images/liveHeart.png";
-      heart2.src = "images/liveHeart.png";
-      heart1.src = "images/liveHeart.png";
 
       // loop that restores every key on the gameboard to default
       for(let i = 0; i < keys.length; i ++){
@@ -258,6 +217,36 @@
         key.classList.remove('chosen');
         key.classList.remove('wrong');
       }
+    }else if (gameWon == false){
+
+      // displays game over display with losing messages
+      // hides winning message
+
+        this.missed = 0;
+        // display winning message and hide losing message
+        show.style.display = 'block';
+        win.style.display = 'none';
+        lose.style.display = 'block';
+
+        // loops over list that contains the phrase and removes all the list items
+        while (phraseList.hasChildNodes()){
+          phraseList.removeChild(phraseList.firstChild);
+        }
+
+        // restores hearts to default
+        heart5.src = "images/liveHeart.png";
+        heart4.src = "images/liveHeart.png";
+        heart3.src = "images/liveHeart.png";
+        heart2.src = "images/liveHeart.png";
+        heart1.src = "images/liveHeart.png";
+
+        // loop that restores every key on the gameboard to default
+        for(let i = 0; i < keys.length; i ++){
+          var key = keys[i];
+          key.classList.remove('chosen');
+          key.classList.remove('wrong');
+          key.disabled = false;
+        }
     }
    }
  }
